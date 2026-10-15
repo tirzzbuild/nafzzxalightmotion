@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alight Motion Premium Activator</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Axios CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <!-- SweetAlert2 CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body class="bg-slate-900 text-white min-h-screen flex items-center justify-center p-4">
+
+    <div class="max-w-md w-full bg-slate-800 rounded-2xl shadow-2xl border border-slate-700 p-6 space-y-6">
+        
+        <!-- Header -->
+        <div class="text-center space-y-2">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-indigo-600/20 text-indigo-400 rounded-2xl mb-2">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                </svg>
+            </div>
+            <h1 class="text-2xl font-bold text-white">Alight Motion Premium</h1>
+            <p class="text-sm text-slate-400">Aktifkan keanggotaan Premium kamu secara otomatis</p>
+        </div>
+
+        <!-- Alur Langkah -->
+        <div class="flex items-center justify-between text-xs font-semibold text-slate-400 border-b border-slate-700 pb-4">
+            <span id="step1-badge" class="text-indigo-400">1. Minta Link</span>
+            <span>&rarr;</span>
+            <span id="step2-badge">2. Cek Email</span>
+            <span>&rarr;</span>
+            <span id="step3-badge">3. Aktivasi</span>
+        </div>
+
+        <!-- FORM LANGKAH 1: Kirim Magic Link -->
+        <div id="step-send" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-slate-300 mb-1">Email Alight Motion</label>
+                <input type="email" id="email" placeholder="contoh@gmail.com" 
+                    class="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl focus:outline-none focus:border-indigo-500 text-slate-100 placeholder-slate-500">
+            </div>
+            <button onclick="sendMagicLink()" id="btn-send"
+                class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-3 rounded-xl transition duration-200 shadow-lg shadow-indigo-600/30">
+                Kirim Magic Link
+            </button>
+        </div>
+
+        <!-- FORM LANGKAH 2: Verifikasi Link -->
+        <div id="step-verify" class="space-y-4 hidden">
+            <div class="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl text-amber-300 text-xs">
+                📌 Silakan buka email kamu, **copy/salin link login (magic link)** dari Alight Motion, lalu tempel di bawah ini.
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-300 mb-1">Magic Link / URL Verifikasi</label>
+                <textarea id="magic-link" rows="3" placeholder="https://alightcreative.page.link/..." 
+                    class="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl focus:outline-none focus:border-indigo-500 text-slate-100 placeholder-slate-500 text-xs"></textarea>
+            </div>
+            <button onclick="verifyMagicLink()" id="btn-verify"
+                class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-medium py-3 rounded-xl transition duration-200 shadow-lg shadow-emerald-600/30">
+                Proses & Aktifkan Premium
+            </button>
+            <button onclick="resetForm()" class="w-full text-xs text-slate-400 hover:text-slate-200 py-1">
+                &larr; Gunakan email lain
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+        const API_KEY = 'NafzzxJelekk';
+        const BASE_URL = 'https://api.jerexd.my.id/api/am';
+
+        // Fungsi 1: Kirim Magic Link ke Email
+        async function sendMagicLink() {
+            const email = document.getElementById('email').value.trim();
+            const btnSend = document.getElementById('btn-send');
+
+            if (!email) {
+                Swal.fire('Oops...', 'Masukkan email terdaftar kamu!', 'warning');
+                return;
+            }
+
+            btnSend.disabled = true;
+            btnSend.innerText = 'Mengirim Magic Link...';
+
+            try {
+                // Sesuai endpoint send magic link
+                const response = await axios.get(`${BASE_URL}/send`, {
+                    params: {
+                        apikey: API_KEY,
+                        email: email
+                    }
+                });
+
+                if (response.data) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Magic Link Terkirim!',
+                        text: 'Cek kotak masuk atau folder spam di email kamu.',
+                        timer: 3000
+                    });
+
+                    // Pindah Form ke Langkah 2
+                    document.getElementById('step-send').classList.add('hidden');
+                    document.getElementById('step-verify').classList.remove('hidden');
+                    document.getElementById('step2-badge').classList.add('text-indigo-400');
+                }
+            } catch (error) {
+                console.error(error);
+                Swal.fire('Gagal!', error.response?.data?.message || 'Gagal mengirim magic link. Coba lagi.', 'error');
+            } finally {
+                btnSend.disabled = false;
+                btnSend.innerText = 'Kirim Magic Link';
+            }
+        }
+
+        // Fungsi 2: Verifikasi Magic Link & Aktifkan Premium
+        async function verifyMagicLink() {
+            const link = document.getElementById('magic-link').value.trim();
+            const btnVerify = document.getElementById('btn-verify');
+
+            if (!link) {
+                Swal.fire('Oops...', 'Tempelkan Magic Link yang kamu dapat dari email!', 'warning');
+                return;
+            }
+
+            btnVerify.disabled = true;
+            btnVerify.innerText = 'Mengverifikasi & Mengaktifkan...';
+
+            try {
+                // Sesuai endpoint verif magic link
+                const response = await axios.get(`${BASE_URL}/verif-custom`, {
+                    params: {
+                        apikey: API_KEY,
+                        link: link // menyertakan query param link
+                    }
+                });
+
+                if (response.data) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Aktivasi Berhasil!',
+                        text: 'Akun Alight Motion kamu sekarang sudah Premium.',
+                    });
+                    
+                    document.getElementById('step3-badge').classList.add('text-emerald-400');
+                }
+            } catch (error) {
+                console.error(error);
+                Swal.fire('Aktivasi Gagal!', error.response?.data?.message || 'Magic link tidak valid atau sudah kadaluwarsa.', 'error');
+            } finally {
+                btnVerify.disabled = false;
+                btnVerify.innerText = 'Proses & Aktifkan Premium';
+            }
+        }
+
+        // Reset Tampilan Form
+        function resetForm() {
+            document.getElementById('step-verify').classList.add('hidden');
+            document.getElementById('step-send').classList.remove('hidden');
+            document.getElementById('step2-badge').classList.remove('text-indigo-400');
+        }
+    </script>
+</body>
+</html>
